@@ -16,13 +16,13 @@ Create database in mysql.
 
 |Column Name | Datatype |---|
 | --- | --- | --- |
-|ID |VARCHAR(45) |PK NM UQ |                  
-|username|VARCHAR(45)|NM|
-|password|VARCHAR(100)|---|
+|ID |VARCHAR(45) |PK NN UQ |                  
+|username|VARCHAR(45)|NN|
+|password|VARCHAR(100)|NN|
 |firstname|VARCHAR(45)|---|
-|lastname|VARCHAR(45)|NM|
-|account_created|VARCHAR(45)|NM|
-|account_updated|VARCHAR(45)|---|
+|lastname|VARCHAR(45)|---|
+|account_created|VARCHAR(45)|NN|
+|account_updated|VARCHAR(45)|NN|
 
 Run java spring program.
 
