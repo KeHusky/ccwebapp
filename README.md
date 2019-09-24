@@ -4,10 +4,8 @@
 
 | Name | NEU ID | Email Address |
 | --- | --- | --- |
-| | | |
-| | | |
-| | | |
-| | | |
+|Ke Yuan |001422663 |xu.yifu@husky.neu.edu |
+|Yifu Xu |001491111 |yuan.ke@husky.neu.edu |
 
 ## Technology Stack
 
