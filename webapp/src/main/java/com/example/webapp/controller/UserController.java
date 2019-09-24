@@ -62,7 +62,76 @@ public class UserController {
 
     }
 
+    //Get User Information
+    @RequestMapping(value = "/v1/user/self", method = RequestMethod.GET, produces = "application/json")
+    protected String getUserInformation(HttpServletRequest request, HttpServletResponse response) {
 
+        JsonObject jsonObject = new JsonObject();
+        String header = request.getHeader("Authorization");
+        if (header != null) {
+            User user = helper.validateUser(header);
+            if (user != null) {
+                jsonObject.addProperty("id", user.getID());
+                jsonObject.addProperty("first_name:", user.getFirstname());
+                jsonObject.addProperty("last_name:", user.getLastname());
+                jsonObject.addProperty("email-address", user.getUsername());
+                jsonObject.addProperty("account_created", user.getAccountCreated());
+                jsonObject.addProperty("account_updated", user.getAccountUpdated());
+                response.setStatus(HttpServletResponse.SC_OK);
+                return jsonObject.toString();
+            }
+        }
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        return null;
+    }
+
+    //Update user information
+    @RequestMapping(value = "/v1/user/self", method = RequestMethod.PUT, produces = "application/json")
+    protected String updateUserInformation(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+
+        JsonObject jsonObject = new JsonObject();
+
+        String header = request.getHeader("Authorization");
+        if (user == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return null;
+        }
+        if (!(user.getID() == null && user.getUsername() == null && user.getAccountCreated() == null && user.getAccountUpdated() == null)) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+
+        if (!passwordCheck((user.getPassword()))) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+        if (header != null) {
+            User u = helper.validateUser(header);
+            if (u != null) {
+                System.out.println(user.getPassword());
+                u.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+                System.out.println(user.getPassword());
+                u.setFirstName(user.getFirstname());
+                u.setLastName(user.getLastname());
+                u.setAccountUpdated(new Date().toString());
+                userRepository.save(u);
+                jsonObject.addProperty("id", u.getID());
+                jsonObject.addProperty("first_name:", u.getFirstname());
+                jsonObject.addProperty("last_name:", u.getLastname());
+                jsonObject.addProperty("email-address", u.getUsername());
+                jsonObject.addProperty("account_created", u.getAccountCreated());
+                jsonObject.addProperty("account_updated", u.getAccountUpdated());
+                response.setStatus(HttpServletResponse.SC_OK);
+                return jsonObject.toString();
+            }
+
+        }
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return null;
+
+    }
 
 
     private boolean passwordCheck(String password) {
