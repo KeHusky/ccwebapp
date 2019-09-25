@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class Helper {
@@ -24,11 +22,12 @@ public class Helper {
         String username = credentialValues[0];
         String password = credentialValues[1];
 
-        User user = userRepository.findByUsername(username).get(0);
-
-        if (user != null)
+        if (userRepository.findByUsername(username).size() > 0){
+            User user = userRepository.findByUsername(username).get(0);
             if (BCrypt.checkpw(password, user.getPassword()))
                 return user;
+        }
+
         return null;
 
     }

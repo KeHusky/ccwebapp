@@ -4,6 +4,7 @@ import com.example.webapp.entities.User;
 import com.example.webapp.dao.UserRepository;
 import com.example.webapp.helpers.BCrypt;
 import com.example.webapp.helpers.Helper;
+import com.example.webapp.service.UserService;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,43 +23,21 @@ public class UserController {
     private UserRepository userRepository;
     @Autowired
     private Helper helper;
+    @Autowired
+    private UserService userService;
 
     //Create a user
     @RequestMapping(value = "/v1/user", method = RequestMethod.POST, produces = "application/json")
     public String createNewUser(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 
-        JsonObject jsonObject = new JsonObject();
-        List<User> u = userRepository.findByUsername(user.getUsername());
-        if (!u.isEmpty()) {
+        String result = userService.createNewUser(user);
+        if (result.equals("400"))
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+        else {
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            return result;
         }
-
-        String username = user.getUsername();
-        String password = user.getPassword();
-
-        if (isEmail(username) == false) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
-        }
-        if (!passwordCheck(password)) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
-        }
-
-        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
-        String now = new Date().toString();
-        user.setAccountCreated(now);
-        user.setAccountUpdated(now);
-        userRepository.save(user);
-        jsonObject.addProperty("id", user.getID());
-        jsonObject.addProperty("first_name:", user.getFirstname());
-        jsonObject.addProperty("last_name:", user.getLastname());
-        jsonObject.addProperty("email-address", username);
-        jsonObject.addProperty("account_created", user.getAccountCreated());
-        jsonObject.addProperty("account_updated", user.getAccountUpdated());
-        response.setStatus(HttpServletResponse.SC_CREATED);
-        return jsonObject.toString();
+        return null;
 
     }
 
@@ -66,71 +45,33 @@ public class UserController {
     @RequestMapping(value = "/v1/user/self", method = RequestMethod.GET, produces = "application/json")
     protected String getUserInformation(HttpServletRequest request, HttpServletResponse response) {
 
-        JsonObject jsonObject = new JsonObject();
-        String header = request.getHeader("Authorization");
-        if (header != null) {
-            User user = helper.validateUser(header);
-            if (user != null) {
-                jsonObject.addProperty("id", user.getID());
-                jsonObject.addProperty("first_name:", user.getFirstname());
-                jsonObject.addProperty("last_name:", user.getLastname());
-                jsonObject.addProperty("email-address", user.getUsername());
-                jsonObject.addProperty("account_created", user.getAccountCreated());
-                jsonObject.addProperty("account_updated", user.getAccountUpdated());
-                response.setStatus(HttpServletResponse.SC_OK);
-                return jsonObject.toString();
-            }
+        String result = userService.getUserInformation(request);
+        if (result.equals("401"))
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        else {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return result;
         }
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
         return null;
+
     }
 
     //Update user information
     @RequestMapping(value = "/v1/user/self", method = RequestMethod.PUT, produces = "application/json")
     protected String updateUserInformation(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 
-        JsonObject jsonObject = new JsonObject();
-
-        String header = request.getHeader("Authorization");
-        if (user == null) {
+        String result = userService.updateUserInformation(user, request);
+        if (result.equals("204"))
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return null;
-        }
-        if (!(user.getID() == null && user.getUsername() == null && user.getAccountCreated() == null && user.getAccountUpdated() == null)) {
+        else if (result.equals("400"))
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+        else if (result.equals("401"))
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        else {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return result;
         }
-
-        if (!passwordCheck((user.getPassword()))) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
-        }
-        if (header != null) {
-            User u = helper.validateUser(header);
-            if (u != null) {
-                System.out.println(user.getPassword());
-                u.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
-                System.out.println(user.getPassword());
-                u.setFirstName(user.getFirstname());
-                u.setLastName(user.getLastname());
-                u.setAccountUpdated(new Date().toString());
-                userRepository.save(u);
-                jsonObject.addProperty("id", u.getID());
-                jsonObject.addProperty("first_name:", u.getFirstname());
-                jsonObject.addProperty("last_name:", u.getLastname());
-                jsonObject.addProperty("email-address", u.getUsername());
-                jsonObject.addProperty("account_created", u.getAccountCreated());
-                jsonObject.addProperty("account_updated", u.getAccountUpdated());
-                response.setStatus(HttpServletResponse.SC_OK);
-                return jsonObject.toString();
-            }
-
-        }
-
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         return null;
-
     }
 
 
