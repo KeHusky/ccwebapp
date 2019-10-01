@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="34a866bf-50e4-4ede-9184-a575b9343034" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/demo/DemoApplicationTests.java" beforeDir="false" />
-    </list>
+    <list default="true" id="34a866bf-50e4-4ede-9184-a575b9343034" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,11 +14,9 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/example/webapp/controller/UserController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="27" column="43" selection-start-line="27" selection-start-column="43" selection-end-line="27" selection-end-column="43" />
+            <state relative-caret-position="489">
+              <caret line="30" column="43" selection-start-line="30" selection-start-column="43" selection-end-line="30" selection-end-column="43" />
               <folding>
-                <element signature="method#createNewUser#0;class#UserController#0" />
-                <element signature="method#getUserInformation#0;class#UserController#0" />
                 <element signature="method#updateUserInformation#0;class#UserController#0" />
                 <element signature="method#passwordCheck#0;class#UserController#0" />
                 <element signature="method#isEmail#0;class#UserController#0" />
@@ -226,16 +221,15 @@
       <updated>1569349934112</updated>
       <workItem from="1569349975589" duration="1561000" />
       <workItem from="1569354702523" duration="272000" />
-      <workItem from="1569385046291" duration="764000" />
+      <workItem from="1569385046291" duration="1059000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2986000" />
+    <option name="totallyTimeSpent" value="3281000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1918" height="863" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20299146" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -324,11 +318,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/example/webapp/controller/UserController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="27" column="43" selection-start-line="27" selection-start-column="43" selection-end-line="27" selection-end-column="43" />
+        <state relative-caret-position="489">
+          <caret line="30" column="43" selection-start-line="30" selection-start-column="43" selection-end-line="30" selection-end-column="43" />
           <folding>
-            <element signature="method#createNewUser#0;class#UserController#0" />
-            <element signature="method#getUserInformation#0;class#UserController#0" />
             <element signature="method#updateUserInformation#0;class#UserController#0" />
             <element signature="method#passwordCheck#0;class#UserController#0" />
             <element signature="method#isEmail#0;class#UserController#0" />
