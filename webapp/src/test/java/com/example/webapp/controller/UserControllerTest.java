@@ -50,8 +50,8 @@ public class UserControllerTest {
         User user = gson.fromJson(test, User.class);
 
         String result = userController.createNewUser(user, request, response);
-        assertEquals(true, result != null);
 
+        assertEquals(true, result != null);
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
     }
 
@@ -63,7 +63,6 @@ public class UserControllerTest {
 
         assertEquals(true, result != null);
 
-        JsonObject jsonObject = gson.fromJson(result, JsonObject.class);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 
