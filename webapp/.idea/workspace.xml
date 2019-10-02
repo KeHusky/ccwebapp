@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="949e8deb-cab7-42ce-b628-8032fc65651b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/webapp/controller/UserControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/example/webapp/controller/UserControllerTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="949e8deb-cab7-42ce-b628-8032fc65651b" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -56,8 +54,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/java/com/example/webapp/controller/UserControllerTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="641">
-              <caret line="82" column="1" selection-start-line="82" selection-start-column="1" selection-end-line="82" selection-end-column="1" />
+            <state relative-caret-position="337">
+              <caret line="66" column="5" lean-forward="true" selection-start-line="66" selection-start-column="5" selection-end-line="66" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -286,6 +284,7 @@
     <property name="RequestMappingsPanelWidth1" value="75" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1569974314576" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -441,7 +440,7 @@
       <workItem from="1569941930294" duration="7820000" />
       <workItem from="1569964919608" duration="209000" />
       <workItem from="1569968576030" duration="592000" />
-      <workItem from="1569973528573" duration="656000" />
+      <workItem from="1569973528573" duration="1293000" />
     </task>
     <servers />
   </component>
@@ -478,7 +477,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="93573000" />
+    <option name="totallyTimeSpent" value="94210000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -491,7 +490,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1918" height="863" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4957806" visible="true" weight="0.22222222" />
       <window_info id="Structure" order="1" sideWeight="0.5042194" side_tool="true" weight="0.20911528" />
@@ -717,8 +715,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/com/example/webapp/controller/UserControllerTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="641">
-          <caret line="82" column="1" selection-start-line="82" selection-start-column="1" selection-end-line="82" selection-end-column="1" />
+        <state relative-caret-position="337">
+          <caret line="66" column="5" lean-forward="true" selection-start-line="66" selection-start-column="5" selection-end-line="66" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
