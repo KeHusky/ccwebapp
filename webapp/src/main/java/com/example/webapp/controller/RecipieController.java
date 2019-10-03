@@ -75,7 +75,6 @@ public class RecipieController {
             jsonObject.addProperty("error message", "no auth");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
-            System.out.println(helper);
             User user = helper.validateUser(header);
             if (user == null) {
                 jsonObject.addProperty("error message", "wrong username or password");
@@ -262,9 +261,6 @@ public class RecipieController {
 
         JsonObject jsonObject = new JsonObject();
 
-        System.out.println(request.getRequestURI());
-
-        System.out.println(request.getRequestURI().split("/")[0]);
         String recipieID = request.getRequestURI().split("/")[3];
         String header = request.getHeader("Authorization");
 
