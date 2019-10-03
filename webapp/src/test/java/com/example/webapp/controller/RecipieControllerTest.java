@@ -75,14 +75,17 @@ public class RecipieControllerTest {
     @Test
     @Transactional
     public void deleteRecipie() {
-        request.setRequestURI("/v1/recipie/00b206a1-0de8-4f56-a062-65120fa14947");
+        request.setRequestURI("/v1/recipie/50196ced-5e36-4230-9633-b1a93f09b6cc");
+        String header = request.getHeader("Authorization");
+        System.out.println(header);
+        recipieController.deleteRecipie(request, response);
         assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
     }
 
     @Test
     @Transactional
     public void putRecipie() {
-        request.setRequestURI("/v1/recipie/00b206a1-0de8-4f56-a062-65120fa14947");
+        request.setRequestURI("/v1/recipie/50196ced-5e36-4230-9633-b1a93f09b6cc");
         recipie = "{\n" +
                 "  \"cook_time_in_min\": 15,\n" +
                 "  \"prep_time_in_min\": 15,\n" +
@@ -109,13 +112,15 @@ public class RecipieControllerTest {
                 "    \"protein_in_grams\": 53.7\n" +
                 "  }\n" +
                 "}";
+        recipieController.putRecipie(recipie, request, response);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 
     @Test
     @Transactional
     public void getRecipie() {
-        request.setRequestURI("/v1/recipie/00b206a1-0de8-4f56-a062-65120fa14947");
+        request.setRequestURI("/v1/recipie/50196ced-5e36-4230-9633-b1a93f09b6cc");
+        recipieController.getRecipie(request, response);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 }
