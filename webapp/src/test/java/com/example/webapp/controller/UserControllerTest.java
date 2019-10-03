@@ -1,4 +1,4 @@
-package com.example.webapp.service;
+package com.example.webapp.controller;
 
 import com.example.webapp.entities.User;
 import com.google.gson.Gson;
@@ -13,27 +13,28 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class UserServiceTest {
+public class UserControllerTest {
 
     @Autowired
-    UserService userService;
+    UserController userController;
 
-    private MockHttpServletRequest request;
-    private User user;
-    private Gson gson;
+    MockHttpServletRequest request;
+    MockHttpServletResponse response;
+    Gson gson;
 
     @Before
     public void setUp() {
         String username = "yuan@husky.edu";
         String password = "123abcABC";
         request = new MockHttpServletRequest();
+        response = new MockHttpServletResponse();
         request.addHeader("Authorization", "Basic " + Base64.getUrlEncoder().encodeToString((username + ":" + password).getBytes()));
         request.setCharacterEncoding("UTF-8");
 
@@ -48,33 +49,21 @@ public class UserServiceTest {
 
         User user = gson.fromJson(test, User.class);
 
-        String result = userService.createNewUser(user);
+        String result = userController.createNewUser(user, request, response);
+
         assertEquals(true, result != null);
-
-        JsonObject jsonObject = gson.fromJson(result, JsonObject.class);
-
-        assertEquals(user.getUsername(), jsonObject.get("email_address").getAsString());
-        assertEquals(user.getFirstname(), jsonObject.get("first_name").getAsString());
-        assertEquals(user.getLastname(), jsonObject.get("last_name").getAsString());
-
+        assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
     }
 
     @Test
     @Transactional
     public void getUserInformationTest() {
 
-        String test = "{'username':'yuan@husky.edu','password' : '123ABCabc','firstname' : 'Ke','lastname' : 'Yuan'}";
-
-        User user = gson.fromJson(test, User.class);
-
-        String result = userService.getUserInformation(request);
+        String result = userController.getUserInformation(request, response);
 
         assertEquals(true, result != null);
 
-        JsonObject jsonObject = gson.fromJson(result, JsonObject.class);
-        assertEquals(user.getUsername(), jsonObject.get("email_address").getAsString());
-        assertEquals(user.getFirstname(), jsonObject.get("first_name").getAsString());
-        assertEquals(user.getLastname(), jsonObject.get("last_name").getAsString());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 
     @Test
@@ -85,13 +74,10 @@ public class UserServiceTest {
 
         User user = gson.fromJson(test, User.class);
 
-        String result = userService.updateUserInformation(user, request);
+        String result = userController.updateUserInformation(user, request, response);
 
         assertEquals(true, result != null);
-
-        JsonObject jsonObject = gson.fromJson(result, JsonObject.class);
-        assertEquals(user.getFirstname(), jsonObject.get("first_name").getAsString());
-        assertEquals(user.getLastname(), jsonObject.get("last_name").getAsString());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 
 }
