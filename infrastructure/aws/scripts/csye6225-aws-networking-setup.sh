@@ -1,13 +1,63 @@
 set -e
 #Usage: setting up our networking resources such as Virtual Private Cloud (VPC), Internet Gateway, Route Table and Routes
-cidr_subnet1=10.0.1.0/24
-cidr_subnet2=10.0.2.0/24
-cidr_subnet3=10.0.3.0/24
-cidr_route=0.0.0.0/0
-STACK_NAME=new
+# cidr_subnet1=10.0.1.0/24
+# cidr_subnet2=10.0.2.0/24
+# cidr_subnet3=10.0.3.0/24
+# cidr_route=0.0.0.0/0
+# STACK_NAME=new
 
 read -p "profile: " PROFILE
 export AWS_PROFILE=$PROFILE
+if [ -z $PROFILE ]
+then 
+    echo "cant be null"
+    exit
+fi
+
+read -p "region: " ZONE
+if [ -z $ZONE ]
+then
+    
+    if [ $PROFILE = 'dev' ]
+    then 
+        ZONE1="us-east-1a"
+        ZONE2="us-east-1b"
+        ZONE3="us-east-1c"
+    else
+        ZONE1="us-east-2a"
+        ZONE2="us-east-2b"
+        ZONE3="us-east-2c"
+    fi
+else 
+    ZONE1=$ZONE"a"
+    ZONE2=$ZONE"b"
+    ZONE3=$ZONE"c"
+fi
+
+read -p "cidr_subnet1: " cidr_subnet1
+if [ -z $cidr_subnet1 ]
+then cidr_subnet1=10.0.1.0/24
+fi
+
+read -p "cidr_subnet2: " cidr_subnet2
+if [ -z $cidr_subnet2 ]
+then cidr_subnet2=10.0.2.0/24
+fi
+
+read -p "cidr_subnet3: " cidr_subnet3
+if [ -z $cidr_subnet3 ]
+then cidr_subnet3=10.0.3.0/24
+fi
+
+read -p "cidr_route: " cidr_route
+if [ -z $cidr_route ]
+then cidr_route=0.0.0.0/0
+fi
+
+read -p "vpc name: " STACK_NAME
+if [ -z $STACK_NAME ]
+then STACK_NAME=new
+fi
 
 #Create VPC and get its Id
 vpcId=`aws ec2 create-vpc --cidr-block 10.0.0.0/16 --query 'Vpc.VpcId' --output text`
@@ -16,15 +66,6 @@ aws ec2 create-tags --resources $vpcId --tags Key=Name,Value=$STACK_NAME
 echo "Vpc created-> Vpc Id:  "$vpcId
 
 #Create subnets
-ZONE1="us-east-1a"
-ZONE2="us-east-1b"
-ZONE3="us-east-1c"
-if [ $PROFILE = 'prod' ]
-then 
-    ZONE1="us-east-2a"
-    ZONE2="us-east-2b"
-    ZONE3="us-east-2c"
-fi
 subnet1=`aws ec2 create-subnet --vpc-id $vpcId --cidr-block $cidr_subnet1 --availability-zone $ZONE1 --query "Subnet.SubnetId" --output text`
 aws ec2 create-tags --resources $subnet1 --tags Key=Name,Value=$STACK_NAME-1
 subnet2=`aws ec2 create-subnet --vpc-id $vpcId --cidr-block $cidr_subnet2 --availability-zone $ZONE2 --query "Subnet.SubnetId" --output text`
