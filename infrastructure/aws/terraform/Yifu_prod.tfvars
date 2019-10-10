@@ -1,6 +1,6 @@
 region = "us-east-2"
-access_key = "AKIARGNIYAP5WLTIE7OA"
-secret_key = "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"
+access_key = "AKIARGNIYAP5ZHBRJQHL"
+secret_key = "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"
 cidr_vpc = "10.0.0.0/16"
 cidr_subnet1 = "10.0.1.0/24"
 cidr_subnet2 = "10.0.2.0/24"
