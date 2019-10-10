@@ -8,6 +8,9 @@ __pycache__/
 
 # Distribution / packaging
 .idea
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
 .Python
 build/
 develop-eggs/
