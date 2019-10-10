@@ -17,11 +17,8 @@ gatewayId=`aws ec2 describe-internet-gateways --filter "Name=attachment.vpc-id,V
 
 #Get subnet123
 subnet1=`aws ec2 describe-subnets --filter "Name=vpc-id,Values=${VPC_ID}" --query 'Subnets[0].{id:SubnetId}' --output text`
-echo $subnet1
 subnet2=`aws ec2 describe-subnets --filter "Name=vpc-id,Values=${VPC_ID}" --query 'Subnets[1].{id:SubnetId}' --output text`
-echo $subnet2
 subnet3=`aws ec2 describe-subnets --filter "Name=vpc-id,Values=${VPC_ID}" --query 'Subnets[2].{id:SubnetId}' --output text`
-echo $subnet3
 #Get a route table Id using the name provided
 routeTableId=`aws ec2 describe-route-tables --filter "Name=association.subnet-id,Values=${subnet1}" --query 'RouteTables[*].{id:RouteTableId}' --output text`
 
