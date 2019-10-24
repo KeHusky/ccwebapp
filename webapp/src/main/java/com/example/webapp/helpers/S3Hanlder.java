@@ -35,6 +35,8 @@ public class S3Hanlder {
     public static String LOCAL_DIR = ClassUtils.getDefaultClassLoader().getResource("").getPath() + "static/";
     @Value("${bucketName}")
     String bucketName;
+    @Value("${region}")
+    String region;
 
     public String uploadfile(MultipartFile file, String fileName, String type) {
 
@@ -47,7 +49,7 @@ public class S3Hanlder {
         File localfile = new File(localFilePath);
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion(Regions.US_EAST_1)
+                    .withRegion(region)
 //                    .withCredentials(new ProfileCredentialsProvider("dev"))
                     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)))
                     .withPathStyleAccessEnabled(true)
@@ -99,7 +101,7 @@ public class S3Hanlder {
     public void deletefile(String object_name) {
 
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                .withRegion(Regions.US_EAST_1)
+                .withRegion(region)
 //                    .withCredentials(new ProfileCredentialsProvider("dev"))
                 .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)))
                 .build();
