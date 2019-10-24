@@ -52,3 +52,16 @@ variable "environment_tag" {
   description = "Environment tag"
   default = "Production"
 }
+
+variable "ami_id" {
+  description = "input ami_id"
+}
+
+variable "key_pair" {
+  description = "input key_pair"
+}
+
+variable "aws_bucket" {
+  description = "input bucket name"
+}
+
