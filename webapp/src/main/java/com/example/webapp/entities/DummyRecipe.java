@@ -3,8 +3,7 @@ package com.example.webapp.entities;
 import lombok.Data;
 
 @Data
-public class DummyRecipie {
-    private String ID;
+public class DummyRecipe {
     private String created_ts;
     private String updated_ts;
     private String author_id;

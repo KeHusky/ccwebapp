@@ -50,15 +50,15 @@ public class UserController {
 
         user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         String now = new Date().toString();
-        user.setAccountCreated(now);
-        user.setAccountUpdated(now);
+        user.setAccount_created(now);
+        user.setAccount_updated(now);
         userRepository.save(user);
-        jsonObject.addProperty("id", user.getID());
+        jsonObject.addProperty("id", user.getId());
         jsonObject.addProperty("first_name", user.getFirstname());
         jsonObject.addProperty("last_name", user.getLastname());
         jsonObject.addProperty("email_address", username);
-        jsonObject.addProperty("account_created", user.getAccountCreated());
-        jsonObject.addProperty("account_updated", user.getAccountUpdated());
+        jsonObject.addProperty("account_created", user.getAccount_created());
+        jsonObject.addProperty("account_updated", user.getAccount_updated());
         response.setStatus(HttpServletResponse.SC_CREATED);
         return jsonObject.toString();
 
@@ -73,12 +73,12 @@ public class UserController {
         if (header != null) {
             User user = helper.validateUser(header);
             if (user != null) {
-                jsonObject.addProperty("id", user.getID());
+                jsonObject.addProperty("id", user.getId());
                 jsonObject.addProperty("first_name", user.getFirstname());
                 jsonObject.addProperty("last_name", user.getLastname());
                 jsonObject.addProperty("email_address", user.getUsername());
-                jsonObject.addProperty("account_created", user.getAccountCreated());
-                jsonObject.addProperty("account_updated", user.getAccountUpdated());
+                jsonObject.addProperty("account_created", user.getAccount_created());
+                jsonObject.addProperty("account_updated", user.getAccount_updated());
                 response.setStatus(HttpServletResponse.SC_OK);
                 return jsonObject.toString();
             }
@@ -112,14 +112,14 @@ public class UserController {
                 u.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
                 u.setFirstname(user.getFirstname());
                 u.setLastname(user.getLastname());
-                u.setAccountUpdated(new Date().toString());
+                u.setAccount_updated(new Date().toString());
                 userRepository.save(u);
-                jsonObject.addProperty("id", u.getID());
+                jsonObject.addProperty("id", u.getId());
                 jsonObject.addProperty("first_name", u.getFirstname());
                 jsonObject.addProperty("last_name", u.getLastname());
                 jsonObject.addProperty("email_address", u.getUsername());
-                jsonObject.addProperty("account_created", u.getAccountCreated());
-                jsonObject.addProperty("account_updated", u.getAccountUpdated());
+                jsonObject.addProperty("account_created", u.getAccount_created());
+                jsonObject.addProperty("account_updated", u.getAccount_updated());
                 response.setStatus(HttpServletResponse.SC_OK);
                 return jsonObject.toString();
             }
