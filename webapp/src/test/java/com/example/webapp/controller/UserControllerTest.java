@@ -2,7 +2,6 @@ package com.example.webapp.controller;
 
 import com.example.webapp.entities.User;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +29,7 @@ public class UserControllerTest {
     Gson gson;
 
     @Before
+    @Transactional
     public void setUp() {
         String username = "yuan@husky.edu";
         String password = "123abcABC";
@@ -39,6 +39,11 @@ public class UserControllerTest {
         request.setCharacterEncoding("UTF-8");
 
         gson = new Gson();
+
+        //prepare database
+        String test = "{'username':'yuan@husky.edu','password' : '123abcABC','firstname' : 'Ke','lastname' : 'Yuan'}";
+        User user = gson.fromJson(test, User.class);
+        userController.createNewUser(user, request, response);
     }
 
     @Test

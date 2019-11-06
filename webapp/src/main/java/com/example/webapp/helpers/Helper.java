@@ -6,12 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
+import java.util.Optional;
 
 @Service
 public class Helper {
 
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     public User validateUser(String header) {
 
@@ -22,13 +23,12 @@ public class Helper {
         String username = credentialValues[0];
         String password = credentialValues[1];
 
-        if (userRepository.findByUsername(username).size() > 0){
-            User user = userRepository.findByUsername(username).get(0);
-            if (BCrypt.checkpw(password, user.getPassword()))
-                return user;
-        }
-
+        Optional<User> optionalUser = userRepository.findById(username);
+        User user = optionalUser.isPresent() ? optionalUser.get() : null;
+        if (user == null)
+            return null;
+        if (BCrypt.checkpw(password, user.getPassword()))
+            return user;
         return null;
-
     }
 }

@@ -1,8 +1,85 @@
 version: 2
 jobs:
   build:
+    working_directory: ~/webapp
+    filters: 
+      branches:
+        only:
+          - A7
     docker:
       - image: circleci/openjdk:8-jdk
+      - image: circleci/php:7.1-apache-node-browsers
+      - image: circleci/mysql:8.0.4
+        environment:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_DATABASE: csye6225
+          MYSQL_USER: dbuser
+          MYSQL_PASSWORD: abc123456
+
     steps:
       - checkout
-      
+
+      - run:
+          name: Install packages
+          command: |
+            sudo apt-get update 
+            sudo apt-get install -y python-pip
+      - run:
+          name: Install awscli
+          command: |
+            sudo pip install awscli
+      - run:
+          name: Waiting for MySQL to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z 127.0.0.1 3306 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for MySQL && exit 1
+      - run:
+          name: Build Artifact
+          command: |
+            cd webapp
+            pwd
+            ls -al
+            mvn package
+            cd target/
+            ls -al
+            cd ../
+            pwd
+            ls -al
+      - run:
+          name: Zip Artifact
+          command: |
+            echo "current build number is ${CIRCLE_BUILD_NUM}"
+            pwd
+            mkdir -p codedeploy_artifact
+            cd codedeploy_artifact
+            cp ../infrastructure/aws/codedeploy/*.sh .
+            cp ../cloudwatch-config.json .
+            cp ../appspec.yml .
+            cp ../webapp/target/demo-0.0.1-SNAPSHOT.jar .
+            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip .
+            rm *.yml *.sh *.jar *.json
+            ls -al
+            pwd
+            cd ..
+            pwd
+            ls -al
+      - run:
+          name: Upload Artifact to S3
+          command: |
+            aws s3 cp --recursive codedeploy_artifact s3://${CODE_DEPLOY_S3_BUCKET}
+      - run:
+          name: Make CodeDeploy API call
+          command: |
+            aws deploy create-deployment \
+              --region ${AWS_REGION} \
+              --output json \
+              --application-name ${CODEDEPLOY_APPLICATION_NAME} \
+              --deployment-config-name CodeDeployDefault.AllAtOnce \
+              --deployment-group-name ${CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME} \
+              --description "CSYE6225 -CodeDeploy" \
+              --s3-location bucket=${CODE_DEPLOY_S3_BUCKET},bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip

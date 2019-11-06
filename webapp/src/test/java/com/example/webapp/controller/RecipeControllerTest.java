@@ -1,5 +1,9 @@
 package com.example.webapp.controller;
 
+import com.example.webapp.dao.RecipeRepository;
+import com.example.webapp.entities.User;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,12 +25,19 @@ public class RecipeControllerTest {
 
     @Autowired
     RecipeController recipeController;
+    @Autowired
+    RecipeRepository recipeRepository;
+    @Autowired
+    UserController userController;
 
     MockHttpServletRequest request;
     MockHttpServletResponse response;
-    String recipe;
+    String recipeString;
+    Gson gson;
+    String id;
 
     @Before
+    @Transactional
     public void setUp() {
         String username = "yuan@husky.edu";
         String password = "123abcABC";
@@ -35,7 +46,7 @@ public class RecipeControllerTest {
         request.addHeader("Authorization", "Basic " + Base64.getUrlEncoder().encodeToString((username + ":" + password).getBytes()));
         request.setCharacterEncoding("UTF-8");
 
-        recipe = "{\n" +
+        recipeString = "{\n" +
                 "  \"cook_time_in_min\": 15,\n" +
                 "  \"prep_time_in_min\": 15,\n" +
                 "  \"title\": \"Creamy Cajun Chicken Pasta\",\n" +
@@ -61,13 +72,20 @@ public class RecipeControllerTest {
                 "    \"protein_in_grams\": 53.7\n" +
                 "  }\n" +
                 "}";
+        gson = new Gson();
 
+        //prepare database
+        String test = "{'username':'yuan@husky.edu','password' : '123abcABC','firstname' : 'Ke','lastname' : 'Yuan'}";
+        User user = gson.fromJson(test, User.class);
+        userController.createNewUser(user, request, response);
+        String result = recipeController.postRecipe(recipeString, request, response);
+        id = gson.fromJson(result, JsonObject.class).get("id").getAsString();
     }
 
     @Test
     @Transactional
     public void postRecipe() {
-        String result = recipeController.postRecipe(recipe, request, response);
+        String result = recipeController.postRecipe(recipeString, request, response);
         assertEquals(true, result != null);
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
     }
@@ -75,16 +93,16 @@ public class RecipeControllerTest {
     @Test
     @Transactional
     public void deleteRecipe() {
-        request.setRequestURI("/v1/recipe/00b206a1-0de8-4f56-a062-65120fa14947");
-        recipeController.deleteRecipe(request,response);
+        request.setRequestURI("/v1/recipe/"+id);
+        recipeController.deleteRecipe(request, response);
         assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
     }
 
     @Test
     @Transactional
     public void putRecipe() {
-        request.setRequestURI("/v1/recipe/00b206a1-0de8-4f56-a062-65120fa14947");
-        recipe = "{\n" +
+        request.setRequestURI("/v1/recipe/"+id);
+        recipeString = "{\n" +
                 "  \"cook_time_in_min\": 15,\n" +
                 "  \"prep_time_in_min\": 15,\n" +
                 "  \"title\": \"Creamy Cajun Chicken Pasta\",\n" +
@@ -110,15 +128,18 @@ public class RecipeControllerTest {
                 "    \"protein_in_grams\": 53.7\n" +
                 "  }\n" +
                 "}";
-        recipeController.putRecipe(recipe,request,response);
+        recipeController.putRecipe(recipeString, request, response);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
     }
 
     @Test
     @Transactional
     public void getRecipe() {
-        request.setRequestURI("/v1/recipe/00b206a1-0de8-4f56-a062-65120fa14947");
-        recipeController.getRecipe(request,response);
+        request.setRequestURI("/v1/recipe/"+id);
+        recipeController.getRecipe(request, response);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+
     }
+
+
 }

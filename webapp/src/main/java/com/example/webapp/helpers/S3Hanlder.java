@@ -4,17 +4,13 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
-import com.example.webapp.dao.MetadataRepository;
-import com.example.webapp.entities.Metadata;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ClassUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -25,20 +21,20 @@ import java.net.URL;
 
 @Service
 public class S3Hanlder {
-    @Autowired
-    MetadataRepository metadataRepository;
 
     @Value("${aws_access_key}")
     String AWS_ACCESS_KEY;
     @Value("${aws_secret_key}")
     String AWS_SECRET_KEY;
-    public static String LOCAL_DIR = ClassUtils.getDefaultClassLoader().getResource("").getPath() + "static/";
+    public static String LOCAL_DIR = "/tmp/";
+    //    public static String LOCAL_DIR = "C:\\Users\\Ke\\Desktop\\6225fall";
     @Value("${bucketName}")
     String bucketName;
     @Value("${region}")
     String region;
+    Logger logger = LoggerFactory.getLogger(S3Hanlder.class);
 
-    public String uploadfile(MultipartFile file, String fileName, String type) {
+    public String uploadfile(MultipartFile file, String fileName) {
 
         String localFilePath = LOCAL_DIR + fileName;
         try {
@@ -56,33 +52,13 @@ public class S3Hanlder {
                     .build();
             // Upload a file as a new object with ContentType and title specified.
             PutObjectRequest request = new PutObjectRequest(bucketName, fileName, localfile);
-
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(file.getSize());
-            metadata.setContentType("image/" + type.toLowerCase());
-            String md5 = "";
-
-            try {
-                md5 = new String(org.apache.commons.codec.binary.Base64.encodeBase64(DigestUtils.md5(file.getBytes())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            metadata.setContentMD5(md5);
-            request.setMetadata(metadata);
-
-            Metadata m = new Metadata();
-            m.setImage_id(fileName);
-            m.setSize(file.getSize());
-            m.setType("image/" + type.toLowerCase());
-            m.setMd5(md5);
-            metadataRepository.save(m);
+//            request.setMetadata(metadata);
 
             s3Client.putObject(request);
 
             GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(bucketName, fileName);
             URL url = s3Client.generatePresignedUrl(urlRequest);
-
+            logger.info("file uploaded");
             localfile.delete();
             return url.toString();
         } catch (AmazonServiceException e) {
@@ -108,6 +84,7 @@ public class S3Hanlder {
 
         try {
             s3Client.deleteObject(bucketName, object_name);
+            logger.info("file deleted");
         } catch (AmazonServiceException e) {
             e.printStackTrace();
         }
