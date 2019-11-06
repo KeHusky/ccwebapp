@@ -27,8 +27,8 @@ public class S3Hanlder {
     String AWS_ACCESS_KEY;
     @Value("${aws_secret_key}")
     String AWS_SECRET_KEY;
-    //    public static String LOCAL_DIR = "/tmp";
-    public static String LOCAL_DIR = ClassUtils.getDefaultClassLoader().getResource("").getPath() + "static/";
+    public static String LOCAL_DIR = "/tmp/";
+    //    public static String LOCAL_DIR = "C:\\Users\\Ke\\Desktop\\6225fall";
     @Value("${bucketName}")
     String bucketName;
     @Value("${region}")

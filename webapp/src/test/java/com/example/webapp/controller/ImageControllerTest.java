@@ -55,7 +55,7 @@ public class ImageControllerTest {
         response = new MockHttpServletResponse();
         request.addHeader("Authorization", "Basic " + Base64.getUrlEncoder().encodeToString((username + ":" + password).getBytes()));
         request.setCharacterEncoding("UTF-8");
-        mockMultipartFile = new MockMultipartFile("file", "time.jpg", "", readBytesFromFile("time.jpg"));
+        mockMultipartFile = new MockMultipartFile("file", "time.jpg", "", readBytesFromFile("src/main/resources/time.jpg"));
 
         recipeString = "{\n" +
                 "  \"cook_time_in_min\": 15,\n" +
