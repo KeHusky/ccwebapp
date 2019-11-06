@@ -94,6 +94,8 @@ resource "aws_instance" "foo" {
   ami           = "${var.ami_id}"
   key_name = "${var.key_pair}"
   instance_type = "t2.micro"
+  iam_instance_profile = "${aws_iam_instance_profile.instanceprofile.name}"
+  user_data = "${data.template_file.user_data.rendered}"
    root_block_device{ 
    volume_size = 20
    volume_type = "gp2"
@@ -105,6 +107,30 @@ resource "aws_instance" "foo" {
    }
   depends_on                = ["aws_db_instance.default"]
 }
+
+
+data "template_file" "user_data"{
+   template = "${file("${path.module}/userdata.sh")}"
+   vars {
+             Endpoint = "${data.aws_db_instance.database.endpoint}"
+             bucketName= "${var.aws_bucket}"
+        }
+}
+
+output "dbendpoint" {
+  value = "${data.aws_db_instance.database.endpoint}"
+}
+
+data "aws_db_instance" "database"{
+ db_instance_identifier = "csye6225-fall2019"
+ depends_on = ["aws_db_instance.default"]
+}
+
+resource "aws_iam_instance_profile" "instanceprofile" {
+  name = "profile"
+  role = "CodeDeployServiceRole"
+}
+
 
 resource "aws_volume_attachment" "ebs_att" {
   device_name = "/dev/sdh"
