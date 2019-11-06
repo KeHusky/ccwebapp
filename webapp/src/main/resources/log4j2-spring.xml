@@ -3,23 +3,16 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
-                <pattern>%d %p [%t]: %m%n</pattern>
+                <pattern>%p [%t]: %m%n</pattern>
             </PatternLayout>
 
         </Console>
 
-        <RollingFile name="RollingFile"
-                     filePattern="./logs/$${date:yyyy-MM}/%d{dd-MM-yyyy}-%i.log">
+        <File name="RollingFile" filename="./logs/webapp.log">
             <PatternLayout>
-                <pattern>%d %p [%t]: %m%n</pattern>
+                <pattern>%p [%t]: %m%n</pattern>
             </PatternLayout>
-            <Policies>
-                <OnStartupTriggeringPolicy/>
-                <SizeBasedTriggeringPolicy
-                        size="10 MB"/>
-                <TimeBasedTriggeringPolicy/>
-            </Policies>
-        </RollingFile>
+        </File>
     </Appenders>
 
     <Loggers>
