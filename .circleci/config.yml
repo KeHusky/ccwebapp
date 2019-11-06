@@ -45,7 +45,7 @@ jobs:
             cp ../appspec.yml .
             cd ../webapp/target
             ls
-            cp ../webapp/target/webApp-0.0.1-SNAPSHOT.jar .
+            cp ../webapp/target/demo-0.0.1-SNAPSHOT.jar .
             zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip .
             rm *.yml *.sh *.jar *.json
             ls -al
