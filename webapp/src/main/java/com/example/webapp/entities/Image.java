@@ -18,4 +18,5 @@ public class Image {
     private String md5;
     private long size;
     private String type;
+    private String fileName;
 }
