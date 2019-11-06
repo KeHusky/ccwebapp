@@ -104,21 +104,7 @@ public class ImageController {
             statsd.recordExecutionTime("image.POST-api",stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
-        Image image = new Image();
-        image.setId(UUID.randomUUID().toString());
-        String md5 = "";
 
-        try {
-            md5 = new String(org.apache.commons.codec.binary.Base64.encodeBase64(DigestUtils.md5(file.getBytes())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        image.setUrl(s3Hanlder.uploadfile(file, image.getId()));
-        image.setRecipeId(recipeId);
-        image.setMd5(md5);
-        image.setSize(file.getSize());
-        image.setType("image/" + suffix);
         stopWatch.stop();
         stopWatch.start("sql");
         List<Image> imageList = imageRepository.findByRecipeId(recipeId);
@@ -135,6 +121,22 @@ public class ImageController {
                 return jsonObject.toString();
             }
         }
+
+        Image image = new Image();
+        image.setId(UUID.randomUUID().toString());
+        String md5 = "";
+
+        try {
+            md5 = new String(org.apache.commons.codec.binary.Base64.encodeBase64(DigestUtils.md5(file.getBytes())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        image.setUrl(s3Hanlder.uploadfile(file, image.getId()));
+        image.setRecipeId(recipeId);
+        image.setMd5(md5);
+        image.setSize(file.getSize());
+        image.setType("image/" + suffix);
         image.setFileName(file.getOriginalFilename());
         stopWatch.stop();
         stopWatch.start("sql");
