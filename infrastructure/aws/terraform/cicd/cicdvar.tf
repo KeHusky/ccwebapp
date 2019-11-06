@@ -22,3 +22,7 @@ variable "AWS_ACCOUNT_ID" {
 variable "deploy_bucket" {
   description = "deploy_bucket:"
 }
+
+variable "attachment_bucket" {
+  description = "attachment_bucket:"
+}
