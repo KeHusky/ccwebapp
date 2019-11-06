@@ -61,8 +61,8 @@ jobs:
             aws deploy create-deployment \
               --region ${AWS_REGION} \
               --output json \
-              --application-name webapp \
+              --application-name ${CODEDEPLOY_APPLICATION_NAME} \
               --deployment-config-name CodeDeployDefault.AllAtOnce \
-              --deployment-group-name webapp-deployment \
+              --deployment-group-name ${CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME} \
               --description "CSYE6225 -CodeDeploy"
               --s3-location bucket=${CODE_DEPLOY_S3_BUCKET},bundleType=zip,key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip
