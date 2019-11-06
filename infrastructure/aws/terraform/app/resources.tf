@@ -114,6 +114,8 @@ data "template_file" "user_data"{
    vars {
              Endpoint = "${data.aws_db_instance.database.endpoint}"
              bucketName= "${var.aws_bucket}"
+             access_key = "${var.access_key}"
+             secret_key = "${var.secret_key}"
         }
 }
 
@@ -128,7 +130,7 @@ data "aws_db_instance" "database"{
 
 resource "aws_iam_instance_profile" "instanceprofile" {
   name = "profile"
-  role = "CodeDeployServiceRole"
+  role = "CodeDeployEC2ServiceRole"
 }
 
 
