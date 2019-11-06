@@ -5,5 +5,5 @@ sudo chown -R centos:centos /home/centos/webapp
 sudo chmod +x demo-0.0.1-SNAPSHOT.jar
 #source /etc/profile.d/envvariable.sh
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/home/centos/webapp/cloudwatch-config.json -s
-kill -9 $(ps -ef|grep demo | grep -v grep)
-nohup java -jar demo-0.0.1-SNAPSHOT.jar > /home/centos/output.txt 2> /home/centos/output.txt < /home/centos/output.txt &
+kill -9 $(ps -ef|grep java | grep -v grep)
+nohup java -jar demo-0.0.1-SNAPSHOT.jar
