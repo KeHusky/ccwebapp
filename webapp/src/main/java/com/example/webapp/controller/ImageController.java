@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -120,9 +121,26 @@ public class ImageController {
         image.setType("image/" + suffix);
         stopWatch.stop();
         stopWatch.start("sql");
-        imageRepository.save(image);
+        List<Image> imageList = imageRepository.findByRecipeId(recipeId);
         stopWatch.stop();
         statsd.recordExecutionTime("image.POST-sql-3",stopWatch.getLastTaskTimeMillis());
+        stopWatch.start("api");
+        for(Image i :imageList) {
+            if(i.getFileName().equals(file.getOriginalFilename())) {
+                jsonObject.addProperty("error message", "image exited");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                logger.info("image exited");
+                stopWatch.stop();
+                statsd.recordExecutionTime("image.POST-api",stopWatch.getTotalTimeMillis());
+                return jsonObject.toString();
+            }
+        }
+        image.setFileName(file.getOriginalFilename());
+        stopWatch.stop();
+        stopWatch.start("sql");
+        imageRepository.save(image);
+        stopWatch.stop();
+        statsd.recordExecutionTime("image.POST-sql-4",stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
 
         jsonObject.addProperty("id", image.getId());

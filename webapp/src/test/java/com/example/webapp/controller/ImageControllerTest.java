@@ -40,6 +40,7 @@ public class ImageControllerTest {
     MockHttpServletRequest request;
     MockHttpServletResponse response;
     MockMultipartFile mockMultipartFile;
+    MockMultipartFile mockMultipartFile1;
 
     String recipeString;
     Gson gson;
@@ -56,7 +57,7 @@ public class ImageControllerTest {
         request.addHeader("Authorization", "Basic " + Base64.getUrlEncoder().encodeToString((username + ":" + password).getBytes()));
         request.setCharacterEncoding("UTF-8");
         mockMultipartFile = new MockMultipartFile("file", "time.jpg", "", readBytesFromFile("src/main/resources/time.jpg"));
-
+        mockMultipartFile1 = new MockMultipartFile("file", "time1.jpg", "", readBytesFromFile("src/main/resources/time.jpg"));
         recipeString = "{\n" +
                 "  \"cook_time_in_min\": 15,\n" +
                 "  \"prep_time_in_min\": 15,\n" +
@@ -108,7 +109,7 @@ public class ImageControllerTest {
     public void postImage() {
 
         request.setRequestURI("/v1/recipe/" + recipeId + "/image");
-        String result = imageController.postImage(mockMultipartFile, request, response);
+        String result = imageController.postImage(mockMultipartFile1, request, response);
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(result, JsonObject.class);
