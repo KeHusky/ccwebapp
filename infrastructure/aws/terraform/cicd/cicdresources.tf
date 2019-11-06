@@ -19,7 +19,7 @@ resource "aws_iam_policy" "DeployEC2S3" {
                 "s3:List*"
             ],
             "Effect": "Allow",
-            "Resource": ["${aws_s3_bucket.deploybucket.arn}"]
+            "Resource": ["${aws_s3_bucket.deploybucket.arn}/*"]
         }
     ]
 }
@@ -167,7 +167,7 @@ resource "aws_iam_policy" "AttachmentToS3Bucket" {
                                  ],
                         "Effect":"Allow",
                         "Resource" : [
-                                         "${aws_s3_bucket.attachmentbucket.arn}"                            
+                                         "${aws_s3_bucket.attachmentbucket.arn}/*"                            
                                      ]
                      }
                   ]         
