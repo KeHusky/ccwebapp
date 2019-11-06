@@ -1,11 +1,10 @@
 package com.example.webapp.controller;
 
-import com.example.webapp.dao.ImageRepository;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.webapp.helpers.S3Hanlder;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,13 +15,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 import static org.junit.Assert.*;
@@ -33,6 +30,8 @@ public class ImageControllerTest {
 
     @Autowired
     ImageController imageController;
+    @Autowired
+    S3Hanlder s3Hanlder;
 
     MockHttpServletRequest request;
     MockHttpServletResponse response;
@@ -46,7 +45,7 @@ public class ImageControllerTest {
         response = new MockHttpServletResponse();
         request.addHeader("Authorization", "Basic " + Base64.getUrlEncoder().encodeToString((username + ":" + password).getBytes()));
         request.setCharacterEncoding("UTF-8");
-        mockMultipartFile = new MockMultipartFile("file", readBytesFromFile(S3Hanlder.LOCAL_DIR + "time.jpg"));
+        mockMultipartFile = new MockMultipartFile("file", "time.jpg", "", readBytesFromFile(S3Hanlder.LOCAL_DIR + "time.jpg"));
     }
 
     @Test
@@ -58,7 +57,7 @@ public class ImageControllerTest {
         assertEquals(HttpServletResponse.SC_CREATED, response.getStatus());
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(result, JsonObject.class);
-        new S3Hanlder().deletefile(jsonObject.get("id").getAsString());
+        s3Hanlder.deletefile(jsonObject.get("id").getAsString());
 
     }
 
@@ -68,7 +67,7 @@ public class ImageControllerTest {
         request.setRequestURI("/v1/recipe/00b206a1-0de8-4f56-a062-65120fa14947/image/659a7c2d-f10a-4b80-91f3-36835395f303");
         imageController.deleteImage(request, response);
         assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatus());
-        new S3Hanlder().uploadfile(mockMultipartFile, "659a7c2d-f10a-4b80-91f3-36835395f303","jpg");
+        s3Hanlder.uploadfile(mockMultipartFile, "659a7c2d-f10a-4b80-91f3-36835395f303");
     }
 
     @Test

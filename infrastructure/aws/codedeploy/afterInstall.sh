@@ -1,12 +1,8 @@
 #!/bin/bash
-
-sudo systemctl stop tomcat.service
-
-sudo rm -rf /opt/tomcat/webapps/docs  /opt/tomcat/webapps/examples /opt/tomcat/webapps/host-manager  /opt/tomcat/webapps/manager /opt/tomcat/webapps/ROOT
-
-sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war
-
-# cleanup log files
-sudo rm -rf /opt/tomcat/logs/catalina*
-sudo rm -rf /opt/tomcat/logs/*.log
-sudo rm -rf /opt/tomcat/logs/*.txt
+cd /home/centos/webapp
+sudo chown -R centos:centos /home/centos/webapp
+sudo chmod +x webApp-0.0.1-SNAPSHOT.jar
+#source /etc/profile.d/envvariable.sh
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/home/centos/webapp/cloudwatch-config.json -s
+kill -9 $(ps -ef|grep webApp | grep -v grep | awk '{print$2}')
+nohup java -jar webApp-0.0.1-SNAPSHOT.jar > /home/centos/output.txt 2> /home/centos/output.txt < /home/centos/output.txt &

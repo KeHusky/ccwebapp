@@ -17,4 +17,7 @@ public class Image {
     @Column(length = 1000)
     private String url;
     private String recipeId;
+    private String md5;
+    private long size;
+    private String type;
 }
