@@ -70,7 +70,8 @@ resource "aws_iam_user_policy" "CircleCICodeDeploy" {
         "codedeploy:GetApplicationRevision"
       ],
       "Resource": [
-         "arn:aws:codedeploy:us-east-1:312171594426:application:ccwebapp"
+        
+          "arn:aws:codedeploy:us-east-1:312171594426:application:csye6225-webapp"
       ]
     },
     {
@@ -226,7 +227,7 @@ resource "aws_iam_role" "DeployServiceRole" {
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": "ec2.amazonaws.com"
+        "Service": "codedeploy.amazonaws.com"
       },
       "Effect": "Allow",
       "Sid": ""
@@ -285,4 +286,30 @@ resource "aws_s3_bucket" "deploybucket" {
       days = 60
     }
   }
+}
+
+
+
+resource "aws_codedeploy_app" "example" {
+  compute_platform = "Server"
+  name             = "csye6225-webapp"
+}
+
+resource "aws_codedeploy_deployment_group" "foo" {
+  app_name               = "${aws_codedeploy_app.example.name}"
+  deployment_group_name  = "csye6225-webapp-deployment"
+  service_role_arn       = "${aws_iam_role.DeployServiceRole.arn}"
+  deployment_config_name = "CodeDeployDefault.AllAtOnce"
+
+  ec2_tag_filter {
+    key   = "Name"
+    type  = "KEY_AND_VALUE"
+    value = "csyewebapp"
+  }
+
+  auto_rollback_configuration {
+    enabled = true
+    events  = ["DEPLOYMENT_FAILURE"]
+  }
+
 }
