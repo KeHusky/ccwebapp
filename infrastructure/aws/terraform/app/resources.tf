@@ -220,45 +220,6 @@ resource "aws_security_group" "DB" {
   }
 }
 
-resource "aws_s3_bucket" "bucket" {
-
-  
-  bucket = "${var.aws_bucket}"
-
-  force_destroy = true
-  
-  server_side_encryption_configuration{
-  rule{
-     apply_server_side_encryption_by_default{
-
-         sse_algorithm = "aws:kms"
-     }
-  }
-}
-
-  acl    = "private"
-
-  lifecycle_rule {
-    id      = "log"
-    enabled = true
-
-    prefix = "log/"
-
-    tags = {
-      "rule"      = "log"
-      "autoclean" = "true"
-    }
-
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
-
-    expiration {
-      days = 90
-    }
-  }
-}
 
 resource "aws_db_subnet_group" "default" {
   name = "main"

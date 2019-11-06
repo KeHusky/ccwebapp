@@ -19,7 +19,7 @@ resource "aws_iam_policy" "DeployEC2S3" {
                 "s3:List*"
             ],
             "Effect": "Allow",
-            "Resource": "${aws_iam_policy.AttachmentToS3Bucket.arn}"
+            "Resource": ["${aws_s3_bucket.deploybucket.arn}"]
         }
     ]
 }
@@ -167,7 +167,7 @@ resource "aws_iam_policy" "AttachmentToS3Bucket" {
                                  ],
                         "Effect":"Allow",
                         "Resource" : [
-                                         "${aws_s3_bucket.deploybucket.arn}"                            
+                                         "${aws_s3_bucket.attachmentbucket.arn}"                            
                                      ]
                      }
                   ]         
@@ -210,6 +210,11 @@ resource "aws_iam_role_policy_attachment" "attach1" {
 resource "aws_iam_role_policy_attachment" "attach3" {
   role       = "${aws_iam_role.EC2ServiceRole.name}"
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+ }
+
+resource "aws_iam_role_policy_attachment" "attach5" {
+  role       = "${aws_iam_role.EC2ServiceRole.name}"
+  policy_arn = "${aws_iam_policy.AttachmentToS3Bucket.arn}"
  }
 
 resource "aws_iam_role_policy_attachment" "attach4" {
@@ -284,6 +289,46 @@ resource "aws_s3_bucket" "deploybucket" {
 
     expiration {
       days = 60
+    }
+  }
+}
+
+resource "aws_s3_bucket" "attachmentbucket" {
+
+  
+  bucket = "${var.attachment_bucket}"
+
+  force_destroy = true
+  
+  server_side_encryption_configuration{
+  rule{
+     apply_server_side_encryption_by_default{
+
+         sse_algorithm = "aws:kms"
+     }
+  }
+}
+
+  acl    = "private"
+
+  lifecycle_rule {
+    id      = "log"
+    enabled = true
+
+    prefix = "log/"
+
+    tags = {
+      "rule"      = "log"
+      "autoclean" = "true"
+    }
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    expiration {
+      days = 90
     }
   }
 }
