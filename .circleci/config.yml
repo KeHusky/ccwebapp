@@ -5,7 +5,7 @@ jobs:
     filters: 
       branches:
         only:
-          - A7
+          - master
     docker:
       - image: circleci/openjdk:8-jdk
       - image: circleci/php:7.1-apache-node-browsers
