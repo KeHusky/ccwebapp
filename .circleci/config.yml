@@ -43,7 +43,7 @@ jobs:
             cp ../infrastructure/aws/codedeploy/*.sh .
             cp ../cloudwatch-config.json .
             cp ../appspec.yml .
-            cd ../webapp
+            cd ../webapp/target
             ls
             cp ../webapp/target/webApp-0.0.1-SNAPSHOT.jar .
             zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip .
