@@ -71,7 +71,7 @@ resource "aws_iam_user_policy" "CircleCICodeDeploy" {
       ],
       "Resource": [
         
-          "arn:aws:codedeploy:us-east-1:494805991375:application:csye6225-webapp"
+          "arn:aws:codedeploy:${var.AWS_REGION}:${var.AWS_ACCOUNT_ID}:application:csye6225-webapp"
       ]
     },
     {
@@ -90,9 +90,9 @@ resource "aws_iam_user_policy" "CircleCICodeDeploy" {
         "codedeploy:GetDeploymentConfig"
       ],
       "Resource": [
-        "arn:aws:codedeploy:us-east-1:494805991375:deploymentconfig:CodeDeployDefault.OneAtATime",
-        "arn:aws:codedeploy:us-east-1:494805991375:deploymentconfig:CodeDeployDefault.HalfAtATime",
-        "arn:aws:codedeploy:us-east-1:494805991375:deploymentconfig:CodeDeployDefault.AllAtOnce"
+        "arn:aws:codedeploy:${var.AWS_REGION}:${var.AWS_ACCOUNT_ID}:deploymentconfig:CodeDeployDefault.OneAtATime",
+        "arn:aws:codedeploy:${var.AWS_REGION}:${var.AWS_ACCOUNT_ID}:deploymentconfig:CodeDeployDefault.HalfAtATime",
+        "arn:aws:codedeploy:${var.AWS_REGION}:${var.AWS_ACCOUNT_ID}:deploymentconfig:CodeDeployDefault.AllAtOnce"
       ]
     }
   ]
