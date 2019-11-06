@@ -33,20 +33,20 @@ public class RecipeController {
     ImageRepository imageRepository;
     @Autowired
     S3Hanlder s3Hanlder;
-    Logger logger = LoggerFactory.getLogger(RestController.class);
+    Logger logger = LoggerFactory.getLogger(RecipeController.class);
     StatsDClient statsd = new NonBlockingStatsDClient("csye6225", "localhost", 8125);
 
     @Autowired
     Helper helper;
 
     Gson gson = new Gson();
-    JsonObject jsonObject = new JsonObject();
 
     @RequestMapping(value = "/v1/recipe", method = RequestMethod.POST, produces = "application/json")
     protected String postRecipe(@RequestBody String recipe_string, HttpServletRequest request, HttpServletResponse response) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("api");
         statsd.increment("recipe.POST");
+        JsonObject jsonObject = new JsonObject();
 
         DummyRecipe dummyRecipe = gson.fromJson(recipe_string, DummyRecipe.class);
 
@@ -230,6 +230,8 @@ public class RecipeController {
         stopWatch.start("api");
         statsd.increment("recipe.PUT");
 
+        JsonObject jsonObject = new JsonObject();
+
         DummyRecipe dummyRecipe = gson.fromJson(recipe_string, DummyRecipe.class);
 
         if (dummyRecipe.getCook_time_in_min() == null)
@@ -267,7 +269,6 @@ public class RecipeController {
             return jsonObject.toString();
         }
 
-        JsonObject jsonObject = new JsonObject();
         String recipeID = request.getRequestURI().split("/")[3];
         String header = request.getHeader("Authorization");
 
