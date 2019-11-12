@@ -423,7 +423,7 @@ public class RecipeController {
 
     }
 
-    @RequestMapping(value = "/v1/recipes", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/v2/recipes", method = RequestMethod.GET, produces = "application/json")
     public String getNewestRecipe(HttpServletRequest request, HttpServletResponse response) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("api");
