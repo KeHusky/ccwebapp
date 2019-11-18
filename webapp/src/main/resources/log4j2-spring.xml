@@ -2,16 +2,9 @@
 <Configuration>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout>
-                <pattern>%p [%t]: %m%n</pattern>
-            </PatternLayout>
-
         </Console>
 
         <File name="RollingFile" filename="./logs/webapp.log">
-            <PatternLayout>
-                <pattern>%p [%t]: %m%n</pattern>
-            </PatternLayout>
         </File>
     </Appenders>
 
