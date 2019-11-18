@@ -23,10 +23,10 @@ import java.net.URL;
 @Service
 public class S3Hanlder {
 
-    @Value("${aws_access_key}")
-    String AWS_ACCESS_KEY;
-    @Value("${aws_secret_key}")
-    String AWS_SECRET_KEY;
+    @Value("${AWS_ACCESS_KEY_ID}")
+    String AWS_ACCESS_KEY_ID;
+    @Value("${AWS_SECRET_ACCESS_KEY}")
+    String AWS_SECRET_ACCESS_KEY;
     public static String LOCAL_DIR = "/tmp/";
     //    public static String LOCAL_DIR = "C:\\Users\\Ke\\Desktop\\6225fall";
     @Value("${bucketName}")
@@ -47,8 +47,8 @@ public class S3Hanlder {
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                     .withRegion(AWS_REGION)
-                    .withCredentials(new InstanceProfileCredentialsProvider(false))
-//                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)))
+//                    .withCredentials(new InstanceProfileCredentialsProvider(false))
+                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)))
                     .withPathStyleAccessEnabled(true)
                     .build();
             // Upload a file as a new object with ContentType and title specified.
@@ -79,8 +79,8 @@ public class S3Hanlder {
 
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion(AWS_REGION)
-//                    .withCredentials(new ProfileCredentialsProvider("dev"))
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)))
+//                .withCredentials(new InstanceProfileCredentialsProvider(false))
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)))
                 .build();
 
         try {

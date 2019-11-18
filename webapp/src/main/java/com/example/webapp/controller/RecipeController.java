@@ -54,10 +54,10 @@ public class RecipeController {
     String AWS_REGION;
     @Value("${ROUTE53}")
     String ROUTE53;
-    @Value("${aws_access_key}")
-    String AWS_ACCESS_KEY;
-    @Value("${aws_secret_key}")
-    String AWS_SECRET_KEY;
+    @Value("${AWS_ACCESS_KEY_ID}")
+    String AWS_ACCESS_KEY_ID;
+    @Value("${AWS_SECRET_ACCESS_KEY}")
+    String AWS_SECRET_ACCESS_KEY;
 
     @RequestMapping(value = "/v1/recipe", method = RequestMethod.POST, produces = "application/json")
     protected String postRecipe(@RequestBody String recipe_string, HttpServletRequest request, HttpServletResponse response) {
@@ -538,7 +538,7 @@ public class RecipeController {
 
         AmazonSNS snsClient = AmazonSNSClient.builder().withRegion("us-east-1")
 //                .withCredentials(new InstanceProfileCredentialsProvider(false)).build();
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY))).build();
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY))).build();
 
         StringBuffer message = new StringBuffer();
         message.append(HOSTNAME);
