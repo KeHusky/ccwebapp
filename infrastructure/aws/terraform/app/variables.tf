@@ -61,10 +61,6 @@ variable "key_pair" {
   description = "input key_pair"
 }
 
-variable "aws_bucket" {
-  description = "input bucket name"
-}
-
 variable "domainName" {
   description = "input domainName"
 }
