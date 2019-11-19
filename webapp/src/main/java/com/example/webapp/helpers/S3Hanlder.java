@@ -47,8 +47,8 @@ public class S3Hanlder {
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                     .withRegion(AWS_REGION)
-//                    .withCredentials(new InstanceProfileCredentialsProvider(false))
-                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)))
+                    .withCredentials(new InstanceProfileCredentialsProvider(false))
+//                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)))
                     .withPathStyleAccessEnabled(true)
                     .build();
             // Upload a file as a new object with ContentType and title specified.

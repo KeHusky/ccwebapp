@@ -2,6 +2,7 @@ package com.example.webapp.controller;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClient;
 import com.example.webapp.dao.ImageRepository;
@@ -537,8 +538,8 @@ public class RecipeController {
 
 
         AmazonSNS snsClient = AmazonSNSClient.builder().withRegion("us-east-1")
-//                .withCredentials(new InstanceProfileCredentialsProvider(false)).build();
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY))).build();
+                .withCredentials(new InstanceProfileCredentialsProvider(false)).build();
+//                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY))).build();
 
         StringBuffer message = new StringBuffer();
         message.append(HOSTNAME);
