@@ -558,6 +558,7 @@ public class RecipeController {
 
         snsClient.publish(TOPIC_ARN, message.toString());
         logger.info("sns published");
+        logger.info("message: " + message);
 
 
         response.setStatus(HttpServletResponse.SC_OK);
