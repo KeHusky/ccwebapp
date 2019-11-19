@@ -40,7 +40,7 @@ jobs:
             cd webapp
             pwd
             ls -al
-            mvn package
+            mvn package -Dmaven.test.skip=true
             cd target/
             ls -al
             cd ../
