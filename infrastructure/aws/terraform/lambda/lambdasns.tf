@@ -37,6 +37,17 @@ resource "aws_iam_role_policy_attachment" "attach5" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole"
 }
 
+resource "aws_iam_role_policy_attachment" "attach6" {
+  role       = "${aws_iam_role.iam_for_lambda.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "attach7" {
+  role       = "${aws_iam_role.iam_for_lambda.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
 
@@ -58,7 +69,7 @@ EOF
 }
 
 resource "aws_sns_topic" "default" {
-  name = "call-lambda-maybe"
+  name = "csye6225"
 }
 
 resource "aws_sns_topic_subscription" "lambda" {

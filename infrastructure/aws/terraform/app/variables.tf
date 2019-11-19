@@ -65,3 +65,13 @@ variable "aws_bucket" {
   description = "input bucket name"
 }
 
+variable "domainName" {
+  description = "input domainName"
+}
+
+variable "certificate_arn" {
+  description = "input ertificate_arn"
+}
+
+
+
