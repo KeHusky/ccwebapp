@@ -109,7 +109,7 @@ resource "aws_autoscaling_group" "bar" {
 resource "aws_lb_target_group" "test" {
   name     = "tf-example-lb-tg"
   port     = 8080
-  protocol = "HTTPS"
+  protocol = "HTTP"
   vpc_id   = "${aws_vpc.vpc.id}"
 }
 
@@ -145,6 +145,7 @@ resource "aws_launch_template" "foo" {
   network_interfaces {
     associate_public_ip_address = true
     security_groups = ["${aws_security_group.app.id}"]
+    delete_on_termination = true
   }
 
   #security_group_names =  ["${aws_security_group.app.name}"]
