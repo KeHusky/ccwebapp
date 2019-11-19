@@ -96,7 +96,7 @@ public class ImageController {
             statsd.recordExecutionTime("image.POST-api",stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
-        if (!recipe.getAuthor_id().equals(user.getId())) {
+        if (!recipe.getAuthorId().equals(user.getId())) {
             jsonObject.addProperty("error message", "no access");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.info("no access");
@@ -202,7 +202,7 @@ public class ImageController {
             statsd.recordExecutionTime("image.DELETE-api",stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
-        if (!recipe.getAuthor_id().equals(user.getId())) {
+        if (!recipe.getAuthorId().equals(user.getId())) {
             jsonObject.addProperty("error message", "no recipe access");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.info("no recipe access");

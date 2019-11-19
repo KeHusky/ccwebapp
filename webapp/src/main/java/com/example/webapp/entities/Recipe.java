@@ -19,7 +19,7 @@ public class Recipe {
     private String id;
     private String created_ts;
     private String updatedTs;
-    private String author_id;
+    private String authorId;
     private int cook_time_in_min;
     private int prep_time_in_min;
     private int total_time_in_min;

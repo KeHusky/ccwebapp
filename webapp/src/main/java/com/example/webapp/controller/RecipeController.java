@@ -1,5 +1,9 @@
 package com.example.webapp.controller;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClient;
 import com.example.webapp.dao.ImageRepository;
 import com.example.webapp.dao.RecipeRepository;
 import com.example.webapp.entities.DummyRecipe;
@@ -16,6 +20,7 @@ import com.timgroup.statsd.StatsDClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +45,19 @@ public class RecipeController {
     Helper helper;
 
     Gson gson = new Gson();
+
+    @Value("${TOPIC_ARN}")
+    String TOPIC_ARN;
+    @Value("${HOSTNAME}")
+    String HOSTNAME;
+    @Value("${AWS_REGION}")
+    String AWS_REGION;
+    @Value("${ROUTE53}")
+    String ROUTE53;
+    @Value("${AWS_ACCESS_KEY_ID}")
+    String AWS_ACCESS_KEY_ID;
+    @Value("${AWS_SECRET_ACCESS_KEY}")
+    String AWS_SECRET_ACCESS_KEY;
 
     @RequestMapping(value = "/v1/recipe", method = RequestMethod.POST, produces = "application/json")
     protected String postRecipe(@RequestBody String recipe_string, HttpServletRequest request, HttpServletResponse response) {
@@ -81,16 +99,17 @@ public class RecipeController {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.info(jsonObject.get("error meaasage").getAsString());
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.POST-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.POST-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
 
         String header = request.getHeader("Authorization");
         if (header == null) {
             jsonObject.addProperty("error message", "no auth");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            logger.info("no auth");            stopWatch.stop();
-            statsd.recordExecutionTime("recipe.POST-api",stopWatch.getTotalTimeMillis());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.info("no auth");
+            stopWatch.stop();
+            statsd.recordExecutionTime("recipe.POST-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
 
@@ -98,14 +117,14 @@ public class RecipeController {
         stopWatch.start("sql");
         User user = helper.validateUser(header);
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.POST-sql-1",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipe.POST-sql-1", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
         if (user == null) {
             jsonObject.addProperty("error message", "wrong username or password");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.info("wrong username or password");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.POST-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.POST-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
 
@@ -113,7 +132,7 @@ public class RecipeController {
         Recipe recipe = new Recipe();
         recipe.setCreated_ts(now);
         recipe.setUpdatedTs(now);
-        recipe.setAuthor_id(user.getId());
+        recipe.setAuthorId(user.getId());
         recipe.setCook_time_in_min(Integer.parseInt(dummyRecipe.getCook_time_in_min()));
         recipe.setPrep_time_in_min(Integer.parseInt(dummyRecipe.getPrep_time_in_min()));
         recipe.setTotal_time_in_min(recipe.getCook_time_in_min() + recipe.getPrep_time_in_min());
@@ -127,12 +146,12 @@ public class RecipeController {
         stopWatch.start("sql");
         recipeRepository.save(recipe);
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.POST-sql-2",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipe.POST-sql-2", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
         jsonObject.addProperty("id", recipe.getId());
         jsonObject.addProperty("created_ts", recipe.getCreated_ts());
         jsonObject.addProperty("updated_ts", recipe.getUpdatedTs());
-        jsonObject.addProperty("author_id", recipe.getAuthor_id());
+        jsonObject.addProperty("author_id", recipe.getAuthorId());
         jsonObject.addProperty("cook_time_in_min", recipe.getCook_time_in_min());
         jsonObject.addProperty("prep_time_in_time", recipe.getPrep_time_in_min());
         jsonObject.addProperty("total_time_in_min", recipe.getTotal_time_in_min());
@@ -149,7 +168,7 @@ public class RecipeController {
         response.setStatus(HttpServletResponse.SC_CREATED);
         logger.info("recipe created");
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.POST-api",stopWatch.getTotalTimeMillis());
+        statsd.recordExecutionTime("recipe.POST-api", stopWatch.getTotalTimeMillis());
         return jsonObject.toString();
     }
 
@@ -160,22 +179,22 @@ public class RecipeController {
         statsd.increment("recipe.DELETE");
 
         JsonObject jsonObject = new JsonObject();
-        String recipeID = request.getRequestURI().split("/")[3];
+        String recipeId = request.getRequestURI().split("/")[3];
         String header = request.getHeader("Authorization");
 
         if (header == null) {
             jsonObject.addProperty("error message", "no auth");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.info("no auth");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.DELETE-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.DELETE-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
         stopWatch.stop();
         stopWatch.start("sql");
         User user = helper.validateUser(header);
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.DELETE-sql-1",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipe.DELETE-sql-1", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
 
         if (user == null) {
@@ -183,43 +202,43 @@ public class RecipeController {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.info("wrong username or password");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.DELETE-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.DELETE-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
-        Optional<Recipe> r = recipeRepository.findById(recipeID);
+        Optional<Recipe> r = recipeRepository.findById(recipeId);
         Recipe recipe = r.isPresent() ? r.get() : null;
         if (recipe == null) {
             jsonObject.addProperty("error message", "no such recipe");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             logger.info("no such recipe");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.DELETE-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.DELETE-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
-        if (!recipe.getAuthor_id().equals(user.getId())) {
+        if (!recipe.getAuthorId().equals(user.getId())) {
             jsonObject.addProperty("error message", "no access");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.info("no access");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.DELETE-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.DELETE-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
 
-        List<Image> imageList = imageRepository.findByRecipeId(recipeID);
+        List<Image> imageList = imageRepository.findByRecipeId(recipeId);
         for (Image image : imageList) {
             s3Hanlder.deletefile(image.getId());
             stopWatch.stop();
             stopWatch.start("sql");
             imageRepository.delete(image);
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.DELETE-sql-2",stopWatch.getLastTaskTimeMillis());
+            statsd.recordExecutionTime("recipe.DELETE-sql-2", stopWatch.getLastTaskTimeMillis());
             stopWatch.start("api");
         }
         recipeRepository.delete(recipe);
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         logger.info("recipe deleted");
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.DELETE-api",stopWatch.getTotalTimeMillis());
+        statsd.recordExecutionTime("recipe.DELETE-api", stopWatch.getTotalTimeMillis());
         return jsonObject.toString();
 
     }
@@ -265,40 +284,40 @@ public class RecipeController {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.info(jsonObject.get("error message").getAsString());
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.PUT-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.PUT-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
 
-        String recipeID = request.getRequestURI().split("/")[3];
+        String recipeId = request.getRequestURI().split("/")[3];
         String header = request.getHeader("Authorization");
 
         if (header == null) {
             jsonObject.addProperty("error message", "no auth");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.info("no auth");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.PUT-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.PUT-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
         stopWatch.stop();
         stopWatch.start("sql");
         User user = helper.validateUser(header);
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.PUT-sql-1",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipe.PUT-sql-1", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
         if (user == null) {
             jsonObject.addProperty("error message", "wrong username or password");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.info("wrong username or password");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.PUT-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.PUT-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
         stopWatch.stop();
         stopWatch.start("sql");
-        Optional<Recipe> r = recipeRepository.findById(recipeID);
+        Optional<Recipe> r = recipeRepository.findById(recipeId);
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.PUT-sql-2",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipe.PUT-sql-2", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
         Recipe recipe = r.isPresent() ? r.get() : null;
         if (recipe == null) {
@@ -306,15 +325,15 @@ public class RecipeController {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             logger.info("no such recipe");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.PUT-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.PUT-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
-        if (!recipe.getAuthor_id().equals(user.getId())) {
+        if (!recipe.getAuthorId().equals(user.getId())) {
             jsonObject.addProperty("error message", "no access");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.info("no access");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.PUT-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.PUT-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
 
@@ -332,12 +351,12 @@ public class RecipeController {
         stopWatch.start("sql");
         recipeRepository.save(recipe);
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.PUT-sql-3",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipe.PUT-sql-3", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
         jsonObject.addProperty("id", recipe.getId());
         jsonObject.addProperty("created_ts", recipe.getCreated_ts());
         jsonObject.addProperty("updated_ts", recipe.getUpdatedTs());
-        jsonObject.addProperty("author_id", recipe.getAuthor_id());
+        jsonObject.addProperty("author_id", recipe.getAuthorId());
         jsonObject.addProperty("cook_time_in_min", recipe.getCook_time_in_min());
         jsonObject.addProperty("prep_time_in_time", recipe.getPrep_time_in_min());
         jsonObject.addProperty("total_time_in_min", recipe.getTotal_time_in_min());
@@ -355,7 +374,7 @@ public class RecipeController {
         response.setStatus(HttpServletResponse.SC_OK);
         logger.info("recipe updated");
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.PUT-api",stopWatch.getTotalTimeMillis());
+        statsd.recordExecutionTime("recipe.PUT-api", stopWatch.getTotalTimeMillis());
         return jsonObject.toString();
 
     }
@@ -367,12 +386,12 @@ public class RecipeController {
         statsd.increment("recipe.GET");
         JsonObject jsonObject = new JsonObject();
 
-        String recipeID = request.getRequestURI().split("/")[3];
+        String recipeId = request.getRequestURI().split("/")[3];
         stopWatch.stop();
         stopWatch.start("sql");
-        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeID);
+        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.GET-sql-1",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipe.GET-sql-1", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
         Recipe recipe = optionalRecipe.isPresent() ? optionalRecipe.get() : null;
         if (recipe == null) {
@@ -380,14 +399,14 @@ public class RecipeController {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             logger.info("no such recipe");
             stopWatch.stop();
-            statsd.recordExecutionTime("recipe.GET-api",stopWatch.getTotalTimeMillis());
+            statsd.recordExecutionTime("recipe.GET-api", stopWatch.getTotalTimeMillis());
             return jsonObject.toString();
         }
         stopWatch.stop();
         stopWatch.start("sql");
-        List<Image> imageList = imageRepository.findByRecipeId(recipeID);
+        List<Image> imageList = imageRepository.findByRecipeId(recipeId);
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.GET-sql-2",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipe.GET-sql-2", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
         JsonArray jsonArray = new JsonArray();
         for (Image image : imageList) {
@@ -400,7 +419,7 @@ public class RecipeController {
         jsonObject.addProperty("id", recipe.getId());
         jsonObject.addProperty("created_ts", recipe.getCreated_ts());
         jsonObject.addProperty("updated_ts", recipe.getUpdatedTs());
-        jsonObject.addProperty("author_id", recipe.getAuthor_id());
+        jsonObject.addProperty("author_id", recipe.getAuthorId());
         jsonObject.addProperty("cook_time_in_min", recipe.getCook_time_in_min());
         jsonObject.addProperty("prep_time_in_time", recipe.getPrep_time_in_min());
         jsonObject.addProperty("total_time_in_min", recipe.getTotal_time_in_min());
@@ -418,7 +437,7 @@ public class RecipeController {
         response.setStatus(HttpServletResponse.SC_OK);
         logger.info("recipe got");
         stopWatch.stop();
-        statsd.recordExecutionTime("recipe.GET-api",stopWatch.getTotalTimeMillis());
+        statsd.recordExecutionTime("recipe.GET-api", stopWatch.getTotalTimeMillis());
         return jsonObject.toString();
 
     }
@@ -434,27 +453,27 @@ public class RecipeController {
         stopWatch.start("sql");
         List<Recipe> recipeList = recipeRepository.findAll(new Sort(Sort.Direction.DESC, "updatedTs"));
         stopWatch.stop();
-        statsd.recordExecutionTime("recipes.GET-sql-1",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipes.GET-sql-1", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
         Recipe recipe = recipeList.get(0);
         stopWatch.stop();
         stopWatch.start("sql");
         List<Image> imageList = imageRepository.findByRecipeId(recipe.getId());
         stopWatch.stop();
-        statsd.recordExecutionTime("recipes.GET-sql-2",stopWatch.getLastTaskTimeMillis());
+        statsd.recordExecutionTime("recipes.GET-sql-2", stopWatch.getLastTaskTimeMillis());
         stopWatch.start("api");
         JsonArray jsonArray = new JsonArray();
         for (Image image : imageList) {
-            JsonObject j = new JsonObject();
-            j.addProperty("id", image.getId());
-            j.addProperty("url", image.getUrl());
-            jsonArray.add(j);
+            JsonObject jsonObjectImage = new JsonObject();
+            jsonObjectImage.addProperty("id", image.getId());
+            jsonObjectImage.addProperty("url", image.getUrl());
+            jsonArray.add(jsonObjectImage);
         }
         jsonObject.add("image", jsonArray);
         jsonObject.addProperty("id", recipe.getId());
         jsonObject.addProperty("created_ts", recipe.getCreated_ts());
         jsonObject.addProperty("updated_ts", recipe.getUpdatedTs());
-        jsonObject.addProperty("author_id", recipe.getAuthor_id());
+        jsonObject.addProperty("author_id", recipe.getAuthorId());
         jsonObject.addProperty("cook_time_in_min", recipe.getCook_time_in_min());
         jsonObject.addProperty("prep_time_in_time", recipe.getPrep_time_in_min());
         jsonObject.addProperty("total_time_in_min", recipe.getTotal_time_in_min());
@@ -472,9 +491,83 @@ public class RecipeController {
         response.setStatus(HttpServletResponse.SC_OK);
         logger.info("recipes got");
         stopWatch.stop();
-        statsd.recordExecutionTime("recipes.PET-api",stopWatch.getTotalTimeMillis());
+        statsd.recordExecutionTime("recipes.PET-api", stopWatch.getTotalTimeMillis());
         return jsonObject.toString();
 
+    }
+
+    @RequestMapping(value = "/v1/myrecipes", method = RequestMethod.POST, produces = "application/json")
+    public String getMyRecipe(HttpServletRequest request, HttpServletResponse response) {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("api");
+        statsd.increment("myrecipes.POST");
+        JsonObject jsonObject = new JsonObject();
+
+        String header = request.getHeader("Authorization");
+        if (header == null) {
+            jsonObject.addProperty("error message", "no auth");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.info("no auth");
+            stopWatch.stop();
+            statsd.recordExecutionTime("recipe.POST-api", stopWatch.getTotalTimeMillis());
+            return jsonObject.toString();
+        }
+
+        stopWatch.stop();
+        stopWatch.start("sql");
+        User user = helper.validateUser(header);
+        stopWatch.stop();
+        statsd.recordExecutionTime("myrecipes.POST-sql-1", stopWatch.getLastTaskTimeMillis());
+        stopWatch.start("api");
+        if (user == null) {
+            jsonObject.addProperty("error message", "wrong username or password");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            logger.info("wrong username or password");
+            stopWatch.stop();
+            statsd.recordExecutionTime("myrecipes.POST-api", stopWatch.getTotalTimeMillis());
+            return jsonObject.toString();
+        }
+
+        stopWatch.stop();
+        stopWatch.start("sql");
+        List<Recipe> myRecipes = recipeRepository.findByAuthorId(user.getId());
+        stopWatch.stop();
+        statsd.recordExecutionTime("myrecipes.POST.sql-2", stopWatch.getLastTaskTimeMillis());
+        stopWatch.start("api");
+
+
+        AmazonSNS snsClient = AmazonSNSClient.builder().withRegion("us-east-1")
+//                .withCredentials(new InstanceProfileCredentialsProvider(false)).build();
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY))).build();
+
+        StringBuffer message = new StringBuffer();
+        message.append(HOSTNAME);
+        message.append("|");
+        message.append(AWS_REGION);
+        message.append("|");
+        message.append(ROUTE53);
+        message.append("|");
+        message.append(user.getUsername());
+        message.append("|");
+
+        JsonArray jsonArray = new JsonArray();
+        for (Recipe recipe : myRecipes) {
+            JsonObject jsonObjectRecipe = new JsonObject();
+            jsonObjectRecipe.addProperty("id", recipe.getId());
+            jsonArray.add(jsonObjectRecipe);
+            message.append(recipe.getId());
+            message.append("|");
+        }
+
+        snsClient.publish(TOPIC_ARN, message.toString());
+        logger.info("sns published");
+
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        logger.info("myrecipes got");
+        stopWatch.stop();
+        statsd.recordExecutionTime("myrecipes.POST-api", stopWatch.getTotalTimeMillis());
+        return jsonArray.toString();
     }
 
 }

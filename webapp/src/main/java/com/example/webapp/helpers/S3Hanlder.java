@@ -4,6 +4,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
@@ -22,16 +23,16 @@ import java.net.URL;
 @Service
 public class S3Hanlder {
 
-    @Value("${aws_access_key}")
-    String AWS_ACCESS_KEY;
-    @Value("${aws_secret_key}")
-    String AWS_SECRET_KEY;
+    @Value("${AWS_ACCESS_KEY_ID}")
+    String AWS_ACCESS_KEY_ID;
+    @Value("${AWS_SECRET_ACCESS_KEY}")
+    String AWS_SECRET_ACCESS_KEY;
     public static String LOCAL_DIR = "/tmp/";
     //    public static String LOCAL_DIR = "C:\\Users\\Ke\\Desktop\\6225fall";
     @Value("${bucketName}")
     String bucketName;
-    @Value("${region}")
-    String region;
+    @Value("${AWS_REGION}")
+    String AWS_REGION;
     Logger logger = LoggerFactory.getLogger(S3Hanlder.class);
 
     public String uploadfile(MultipartFile file, String fileName) {
@@ -45,9 +46,9 @@ public class S3Hanlder {
         File localfile = new File(localFilePath);
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion(region)
-//                    .withCredentials(new ProfileCredentialsProvider("dev"))
-                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)))
+                    .withRegion(AWS_REGION)
+//                    .withCredentials(new InstanceProfileCredentialsProvider(false))
+                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)))
                     .withPathStyleAccessEnabled(true)
                     .build();
             // Upload a file as a new object with ContentType and title specified.
@@ -77,9 +78,9 @@ public class S3Hanlder {
     public void deletefile(String object_name) {
 
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                .withRegion(region)
-//                    .withCredentials(new ProfileCredentialsProvider("dev"))
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY, AWS_SECRET_KEY)))
+                .withRegion(AWS_REGION)
+//                .withCredentials(new InstanceProfileCredentialsProvider(false))
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)))
                 .build();
 
         try {
