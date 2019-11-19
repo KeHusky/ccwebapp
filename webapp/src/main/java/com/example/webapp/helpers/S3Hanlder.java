@@ -28,7 +28,7 @@ public class S3Hanlder {
     @Value("${AWS_SECRET_ACCESS_KEY}")
     String AWS_SECRET_ACCESS_KEY;
     public static String LOCAL_DIR = "/tmp/";
-    //    public static String LOCAL_DIR = "C:\\Users\\Ke\\Desktop\\6225fall";
+    //        public static String LOCAL_DIR = "C:\\Users\\Ke\\Desktop\\6225fall";
     @Value("${bucketName}")
     String bucketName;
     @Value("${AWS_REGION}")
@@ -79,8 +79,8 @@ public class S3Hanlder {
 
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion(AWS_REGION)
-//                .withCredentials(new InstanceProfileCredentialsProvider(false))
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)))
+                .withCredentials(new InstanceProfileCredentialsProvider(false))
+//                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)))
                 .build();
 
         try {

@@ -49,8 +49,6 @@ public class RecipeController {
 
     @Value("${TOPIC_ARN}")
     String TOPIC_ARN;
-    @Value("${HOSTNAME}")
-    String HOSTNAME;
     @Value("${AWS_REGION}")
     String AWS_REGION;
     @Value("${ROUTE53}")
@@ -542,8 +540,6 @@ public class RecipeController {
 //                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY))).build();
 
         StringBuffer message = new StringBuffer();
-        message.append(HOSTNAME);
-        message.append("|");
         message.append(AWS_REGION);
         message.append("|");
         message.append(ROUTE53);
