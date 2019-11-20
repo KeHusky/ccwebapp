@@ -69,5 +69,10 @@ variable "certificate_arn" {
   description = "input ertificate_arn"
 }
 
+variable "aws_bucket" {
+  description = "input aws_bucket"
+}
+
+
 
 
