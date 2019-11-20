@@ -252,6 +252,11 @@ resource "aws_iam_role_policy_attachment" "attach2" {
                
 }
 
+resource "aws_s3_bucket_object" "object"{
+    bucket = "${aws_s3_bucket.deploybucket.id}"
+    key    = "default"
+    source = "lambda-0.0.1.zip" 
+}
 
 resource "aws_s3_bucket" "deploybucket" {
 

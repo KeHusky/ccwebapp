@@ -86,14 +86,9 @@ resource "aws_lambda_function" "func" {
   role          = "${aws_iam_role.iam_for_lambda.arn}"
   handler       = "LogEvent::handleRequest"
   runtime       = "java8"
-
-  depends_on    = ["aws_iam_role_policy_attachment.lambda_logs", "aws_cloudwatch_log_group.example"]
-}
-
-
-resource "aws_cloudwatch_log_group" "example" {
-  name              = "Sentemail"
-  retention_in_days = 14
+  timeout       = 90
+  memory_size   = 512
+  depends_on    = ["aws_iam_role_policy_attachment.lambda_logs"]
 }
 
 # See also the following AWS managed policy: AWSLambdaBasicExecutionRole
