@@ -86,7 +86,8 @@ resource "aws_lambda_function" "func" {
   role          = "${aws_iam_role.iam_for_lambda.arn}"
   handler       = "LogEvent::handleRequest"
   runtime       = "java8"
-
+  timeout       = 90
+  memory_size   = 512
   depends_on    = ["aws_iam_role_policy_attachment.lambda_logs"]
 }
 
